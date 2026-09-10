@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Тест Аюму // Monkey Memory Benchmark</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐵</text></svg>">
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <div class="top-bar">
+      <h1><span class="h1-icon">🐵</span> Тест Аюму</h1>
+      <div class="top-btn-group">
+        <button id="btn-sound"   class="icon-btn" title="Звук">🔊</button>
+        <button id="btn-open-lb" class="icon-btn" title="Лидерборд">🏆</button>
+        <button id="btn-help"    class="icon-btn" title="Правила">❓</button>
+      </div>
+    </div>
+
+    <!-- ЭКРАН 1: СТАРТ -->
+    <div id="screen-start" class="screen active">
+      <p class="subtitle">Шимпанзе Аюму запоминал 9 цифр за 0.65 секунды. Проверь свой мозг против примата!</p>
+
+      <div class="auth-card">
+        <input id="player-nick" class="input-field" type="text" maxlength="30"
+               placeholder="Введи никнейм (к примеру, ник в тг)" autocomplete="off" spellcheck="false" />
+        <div id="user-tip" class="user-status-tip">Укажи ник или @ник_в_тг для участия в турнире</div>
+      </div>
+
+      <button id="btn-start" class="btn primary large-btn">▶ Начать тест</button>
+    </div>
+
+    <!-- ЭКРАН 2: ИГРА -->
+    <div id="screen-game" class="screen">
+      <div class="game-hud">
+        <div class="hud-item">
+          <span class="hud-label">Цель</span>
+          <span id="hud-level" class="hud-val gold">4 цифры</span>
+        </div>
+        <div class="hud-item">
+          <span class="hud-label">Жизни</span>
+          <span id="hud-lives" class="hud-val accent">❤️❤️❤️</span>
+        </div>
+        <div class="hud-item">
+          <span class="hud-label">Фаза</span>
+          <span id="hud-phase" class="hud-val green">Запоминай</span>
+        </div>
+      </div>
+
+      <div id="timer-bar-wrap">
+        <div id="timer-bar"></div>
+      </div>
+
+      <div class="grid-wrap">
+        <div id="game-grid" class="game-grid"></div>
+      </div>
+
+      <div class="hud-action-row">
+        <div class="game-hint" id="game-hint">Запоминай позиции цифр!</div>
+        <button id="btn-ready-now" class="btn secondary small-btn">⚡ Я запомнил</button>
+      </div>
+    </div>
+
+    <!-- ЭКРАН 3: РЕЗУЛЬТАТ -->
+    <div id="screen-result" class="screen">
+      <div class="badge" id="result-badge">🧠 Тестирование завершено</div>
+      <p class="subtitle">Пилот: <span id="res-pilot-name" style="color:var(--gold); font-weight: 700;"></span></p>
+
+      <div id="result-rank-box" class="rank-result-card">
+        <div class="rank-label">Твое положение в общем зачете стенда:</div>
+        <div id="result-rank-title" class="rank-title">🏁 Расчет места…</div>
+      </div>
+
+      <div class="chimp-duel-card">
+        <div class="duel-title">⚔️ Сравнение с шимпанзе Аюму (Киотский университет)</div>
+        <div class="duel-comparison">
+          <div class="duel-row">
+            <span class="duel-actor">🐵 Аюму:</span>
+            <div class="duel-bar-bg"><div class="duel-bar-fill chimp-fill" style="width: 90%;"></div></div>
+            <span class="duel-stat">190 мс/клик</span>
+          </div>
+          <div class="duel-row">
+            <span class="duel-actor">🧑 Ты:</span>
+            <div class="duel-bar-bg"><div id="player-duel-bar" class="duel-bar-fill player-fill"></div></div>
+            <span id="player-duel-speed" class="duel-stat">0 мс/клик</span>
+          </div>
+        </div>
+        <div id="duel-verdict" class="duel-verdict">Анализ нейронной скорости…</div>
+      </div>
+
+      <!-- Контейнер оповещения о рекорде -->
+      <div id="record-notification" class="record-alert"></div>
+
+      <div class="result-stats-card">
+        <div>
+          <span class="label">Максимальный результат:</span>
+          <span class="value" id="res-score">0 цифр</span>
+        </div>
+        <div>
+          <span class="label">Скорость реакции:</span>
+          <span class="value" id="res-click-speed">0 мс/клик</span>
+        </div>
+        <div>
+          <span class="label">Чистое время кликов:</span>
+          <span class="value" id="res-time">0.0 сек</span>
+        </div>
+      </div>
+
+      <div class="result-actions">
+        <button id="btn-again"   class="btn primary large-btn">🔄 Еще попытка</button>
+        <button id="btn-show-lb" class="btn secondary">🏆 Таблица лидеров</button>
+      </div>
+    </div>
+
+    <!-- ЭКРАН 4: ЛИДЕРБОРД -->
+    <div id="screen-leaderboard" class="screen">
+      <p class="subtitle">🏆 Официальный рейтинг зрительной памяти</p>
+      <div id="lb-table-wrap">
+        <table id="lb-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Никнейм</th>
+              <th>Рекорд</th>
+              <th>Скорость</th>
+              <th>Vs Аюму</th>
+              <th>Дата</th>
+            </tr>
+          </thead>
+          <tbody id="lb-body"></tbody>
+        </table>
+        <p id="lb-empty" class="lb-empty hidden">Пока нет записей — пройди тест первым!</p>
+      </div>
+      <div class="result-actions">
+        <button id="btn-lb-back" class="btn primary">← Назад</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- МОДАЛКА: ПРАВИЛА -->
+  <div id="modal-help" class="modal-overlay hidden">
+    <div class="modal">
+      <h2>❓ Правила теста Аюму</h2>
+      <div class="help-section">
+        <h3>🎯 Запоминание</h3>
+        <p>На сетке появляются цифры. Запомни их расположение до завершения полосы таймера (или нажми <b>«Я запомнил»</b>).</p>
+      </div>
+      <div class="help-section">
+        <h3>⚡ Воспроизведение</h3>
+        <p>Плитки скрываются. Нажимай на них строго по порядку: <b>1 ➔ 2 ➔ 3...</b> Вся сетка активна: клик по пустой клетке или мимо очереди сжигает жизнь.</p>
+      </div>
+      <div class="help-section">
+        <h3>🐵 Рекорд Аюму</h3>
+        <p>Шимпанзе Аюму безошибочно воспроизводил 9 цифр со средней скоростью клика <b>190 миллисекунд</b>.</p>
+      </div>
+      <button id="btn-help-close" class="btn primary large-btn">Понятно!</button>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
