@@ -1,9 +1,9 @@
 /* ==========================================================
    CHIMP TEST // MONKEY MEMORY BENCHMARK
-   Smart Auto-Increment & Clickable Nick Suggestion (Strict Unique)
+   Calibrated Duel Ratios & Strict Unique Nicknames
    ========================================================== */
 
-const GRID_SIZE = 25; // 5x5
+const GRID_SIZE = 25;
 const MAX_LIVES = 3;
 const CHIMP_CLICK_SPEED_MS = 190;
 
@@ -59,7 +59,6 @@ const btnAgain         = document.getElementById('btn-again');
 const btnOpenLb        = document.getElementById('btn-open-lb');
 const btnShowLb        = document.getElementById('btn-show-lb');
 const btnLbBack        = document.getElementById('btn-lb-back');
-const btnLbClear       = document.getElementById('btn-lb-clear');
 const lbBody           = document.getElementById('lb-body');
 const lbEmpty          = document.getElementById('lb-empty');
 
@@ -68,7 +67,7 @@ const btnHelp          = document.getElementById('btn-help');
 const btnHelpClose     = document.getElementById('btn-help-close');
 const modalHelp        = document.getElementById('modal-help');
 
-// Аудиосинтезатор (Web Audio API)
+// Аудиосинтезатор
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
 function playTileTone(stepIndex) {
@@ -132,7 +131,6 @@ function showScreen(name) {
   if (screens[name]) screens[name].classList.add('active');
 }
 
-// ── Безопасный парсинг сущностей лидерборда ───────────────
 function getItemNick(item) {
   if (!item) return '';
   return String(item.handle || item.name || item.nick || '').trim();
@@ -148,14 +146,12 @@ function getItemSpeed(item) {
   return Number(item.clickSpeed ?? 999);
 }
 
-// Извлечение корня никнейма без суффиксов
 function getBaseNick(rawNick) {
   if (!rawNick || typeof rawNick !== 'string') return '';
   const cleaned = rawNick.trim().replace(/(_\d+)+$/i, '').trim();
   return cleaned || rawNick.trim();
 }
 
-// Поиск следующего свободного имени вида nick_2, nick_3 без повторов
 function getNextAvailableNick(rawNick, existingList) {
   const base = getBaseNick(rawNick);
   const escapeBase = base.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -183,7 +179,6 @@ function getNextAvailableNick(rawNick, existingList) {
   return `${base}_${maxNum + 1}`;
 }
 
-// ── Работа с бэкендом и локальным кэшем ──────────────────
 async function fetchLeaderboard() {
   try {
     const res = await fetch('/api/leaderboard');
@@ -215,13 +210,12 @@ async function commitLeaderboard(data) {
   }
 }
 
-// Проверка уникальности никнейма с кликабельной подсказкой
 async function checkUserStatus() {
   if (!playerNickInput || !userTip) return false;
   const raw = playerNickInput.value.trim();
   if (!raw) {
     userTip.className = 'user-status-tip';
-    userTip.textContent = 'Укажи ник или @ник_в_тг для участия в турнире';
+    userTip.textContent = 'Никнейм должен быть уникальным';
     return false;
   }
 
@@ -298,15 +292,14 @@ function updateHUD() {
 }
 
 function getMemorizeTimeSeconds(level) {
-  // Градация от 3.0 до 7.0 секунд по мере роста количества цифр
   switch (level) {
-    case 4:  return 3.0; // Стартовый уровень: 4 цифры
+    case 4:  return 3.0;
     case 5:  return 3.5;
     case 6:  return 4.2;
     case 7:  return 5.0;
     case 8:  return 5.8;
-    case 9:  return 6.4; // Уровень эталона Аюму
-    default: return 7.0; // 10 и более цифр (максимум)
+    case 9:  return 6.4;
+    default: return 7.0;
   }
 }
 
@@ -492,26 +485,33 @@ async function finishGame() {
   if (resTime) resTime.textContent = `${finalRecallTime} сек`;
 
   if (playerDuelSpeed) playerDuelSpeed.textContent = `${avgClickMs} мс/клик`;
-  const duelPct = Math.max(10, Math.min(100, Math.round((CHIMP_CLICK_SPEED_MS / avgClickMs) * 100)));
+  const duelPct = Math.max(10, Math.min(100, Math.round((CHIMP_CLICK_SPEED_MS / Math.max(1, avgClickMs)) * 100)));
   if (playerDuelBar) playerDuelBar.style.width = `${duelPct}%`;
 
-  const speedRatio = (avgClickMs / CHIMP_CLICK_SPEED_MS).toFixed(1);
+  // Корректный расчет соотношения скорости
+  const isFaster = avgClickMs < CHIMP_CLICK_SPEED_MS;
+  const ratio = isFaster
+    ? (CHIMP_CLICK_SPEED_MS / Math.max(1, avgClickMs)).toFixed(1)
+    : (avgClickMs / CHIMP_CLICK_SPEED_MS).toFixed(1);
+
   if (duelVerdict) {
-    if (avgClickMs <= CHIMP_CLICK_SPEED_MS && finalScore >= 9) {
-      duelVerdict.innerHTML = `🔥 <span style="color:var(--cyan)">НЕВЕРОЯТНО!</span> Ты быстрее шимпанзе Аюму на <b>${CHIMP_CLICK_SPEED_MS - avgClickMs} мс</b>!`;
+    if (isFaster) {
+      duelVerdict.innerHTML = `🔥 <span style="color:var(--cyan)">НЕВЕРОЯТНО!</span> Ты запоминаешь и реагируешь быстрее Аюму в <b style="color:var(--gold)">${ratio} раза</b> — это очень круто!`;
+    } else if (avgClickMs === CHIMP_CLICK_SPEED_MS) {
+      duelVerdict.innerHTML = `⚡ <span style="color:var(--cyan)">НИЧЬЯ!</span> Твоя скорость реакции в точности равна эталону Аюму (190 мс/клик)!`;
     } else {
-      duelVerdict.innerHTML = `🍌 Шимпанзе Аюму был быстрее тебя в <b style="color:var(--gold)">${speedRatio} раза</b>! Отличная попытка.`;
+      duelVerdict.innerHTML = `🍌 Шимпанзе Аюму был быстрее тебя в <b style="color:var(--gold)">${ratio} раза</b>! Отличная попытка.`;
     }
   }
 
-  // ── Append-Only: каждый заезд — отдельная уникальная строка ─────────
   const list = await fetchLeaderboard();
   const newEntry = {
     handle: state.playerNick.trim(),
     score: finalScore,
     clickSpeed: avgClickMs,
     time: finalRecallTime,
-    speedRatio: speedRatio,
+    speedRatio: ratio,
+    isFaster: isFaster,
     date: new Date().toLocaleDateString('ru-RU')
   };
 
@@ -572,6 +572,8 @@ async function renderLeaderboard() {
     const score = getItemScore(item);
     const speed = getItemSpeed(item);
     const date = item.date || '—';
+    const isFaster = item.isFaster ?? (speed < CHIMP_CLICK_SPEED_MS);
+    const ratio = item.speedRatio || (isFaster ? (CHIMP_CLICK_SPEED_MS / Math.max(1, speed)).toFixed(1) : (speed / CHIMP_CLICK_SPEED_MS).toFixed(1));
 
     return `
       <tr class="${i < 3 ? 'rank-' + (i + 1) : ''}">
@@ -579,8 +581,8 @@ async function renderLeaderboard() {
         <td><b>${esc(nick)}</b></td>
         <td><span class="lb-score">${score} цифр</span></td>
         <td>${speed} мс</td>
-        <td style="color:${speed <= CHIMP_CLICK_SPEED_MS ? 'var(--cyan)' : 'var(--gold)'}">
-          ${speed <= CHIMP_CLICK_SPEED_MS ? 'Быстрее 🐵' : 'x' + (item.speedRatio || (speed / CHIMP_CLICK_SPEED_MS).toFixed(1)) + ' медленнее'}
+        <td style="color:${isFaster ? 'var(--cyan)' : 'var(--gold)'}">
+          ${isFaster ? `Быстрее в x${ratio}` : `x${ratio} медленнее`}
         </td>
         <td style="font-size:0.85rem;color:var(--muted)">${date}</td>
       </tr>
@@ -606,15 +608,6 @@ if (btnOpenLb) btnOpenLb.addEventListener('click', () => openLeaderboard('start'
 if (btnShowLb) btnShowLb.addEventListener('click', () => openLeaderboard('result'));
 if (btnLbBack) btnLbBack.addEventListener('click', () => showScreen(state.prevScreen));
 
-if (btnLbClear) {
-  btnLbClear.addEventListener('click', async () => {
-    if (!confirm('Внимание! Это очистит все результаты участников. Продолжить?')) return;
-    await commitLeaderboard([]);
-    localStorage.removeItem('ayumu_leaderboard_stable');
-    renderLeaderboard();
-  });
-}
-
 if (btnSound) {
   btnSound.addEventListener('click', () => {
     state.soundEnabled = !state.soundEnabled;
@@ -634,5 +627,5 @@ if (modalHelp) {
   });
 }
 
-// Первоначальная загрузка
+checkUserStatus();
 fetchLeaderboard();

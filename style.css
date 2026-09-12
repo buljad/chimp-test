@@ -122,42 +122,41 @@ h1 {
 
 /* Форма авторизации */
 .auth-card {
-  background: rgba(0, 0, 0, 0.35);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 18px;
-  padding: 24px 30px;
-  max-width: 480px;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 20px;
+  padding: 30px 36px;
+  max-width: 620px;
   margin: 0 auto 24px;
   display: flex;
   flex-direction: column;
   gap: 16px;
 }
 .input-field {
-  background: rgba(0,0,0,0.4);
-  border: 2px solid rgba(255,255,255,0.18);
-  border-radius: 14px;
+  background: rgba(0, 0, 0, 0.45);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 16px;
   color: var(--text);
-  font-size: 1.3rem;
-  padding: 14px 20px;
+  font-size: 1.35rem;
+  padding: 18px 24px;
   width: 100%;
   text-align: center;
   outline: none;
   transition: all 0.2s;
 }
 .input-field:focus {
-  border-color: var(--accent);
-  box-shadow: 0 0 14px rgba(233, 69, 96, 0.4);
+  border-color: var(--cyan);
+  box-shadow: 0 0 16px rgba(0, 240, 255, 0.4);
 }
 .user-status-tip {
-  font-size: 0.95rem;
-  min-height: 24px;
-  transition: color 0.2s;
+  font-size: 1.05rem;
+  min-height: 26px;
+  color: var(--muted);
 }
-.user-status-tip.new-user { color: var(--gold); }
-.user-status-tip.existing-user { color: var(--success); }
-.user-status-tip.error { color: var(--accent); }
+.user-status-tip.new-user { color: var(--success); }
+.user-status-tip.error { color: var(--accent); font-weight: 600; }
 
-/* HUD индикаторы */
+/* HUD */
 .game-hud {
   display: flex;
   justify-content: space-around;
@@ -187,7 +186,6 @@ h1 {
 .hud-val.gold   { color: var(--gold); }
 .hud-val.green  { color: var(--success); }
 
-/* Таймер-бар обратного отсчета */
 #timer-bar-wrap {
   width: 100%;
   height: 10px;
@@ -206,7 +204,7 @@ h1 {
   box-shadow: 0 0 10px rgba(233,69,96,0.6);
 }
 
-/* Сетка 5x5 */
+/* Сетка */
 .grid-wrap {
   display: flex;
   justify-content: center;
@@ -239,15 +237,12 @@ h1 {
   transition: transform 0.1s, background-color 0.15s, border-color 0.15s, box-shadow 0.15s;
   cursor: pointer;
 }
-
-/* Подсветка всех активных клеток при наведении */
 .cell:hover {
   background: rgba(255, 255, 255, 0.08);
   border-color: rgba(255, 255, 255, 0.25);
   transform: scale(1.02);
 }
 
-/* Фаза запоминания: подсветка ячеек с цифрами */
 .cell.memorize-target {
   background: var(--card);
   border: 2px solid var(--gold);
@@ -260,7 +255,6 @@ h1 {
   50% { box-shadow: 0 0 22px rgba(250, 204, 21, 0.5); }
 }
 
-/* Фаза воспроизведения: скрытая неоновая плашка */
 .cell.hidden-tile {
   background: #0f1c3f;
   border: 2px solid var(--cyan);
@@ -273,7 +267,6 @@ h1 {
   transform: scale(1.04);
 }
 
-/* Успешный клик */
 .cell.solved {
   background: rgba(74, 222, 128, 0.2);
   border-color: var(--success);
@@ -284,7 +277,6 @@ h1 {
   transform: scale(0.96);
 }
 
-/* Ошибка / Клик в пустоту */
 .cell.mistake {
   background: var(--accent) !important;
   border-color: #ff5271 !important;
@@ -318,7 +310,7 @@ h1 {
   text-align: left;
 }
 
-/* Карточка дуэли с шимпанзе */
+/* Дуэль */
 .chimp-duel-card {
   background: rgba(0, 0, 0, 0.35);
   border: 1px solid rgba(255, 255, 255, 0.15);
@@ -386,6 +378,7 @@ h1 {
   padding-top: 8px;
   border-top: 1px dashed rgba(255,255,255,0.15);
   text-align: center;
+  line-height: 1.5;
 }
 
 /* Место в общем рейтинге */
@@ -425,12 +418,6 @@ h1 {
   background: rgba(74, 222, 128, 0.2);
   border: 1px solid var(--success);
   color: var(--success);
-}
-.record-alert.keep-record {
-  display: block;
-  background: rgba(250, 204, 21, 0.2);
-  border: 1px solid var(--gold);
-  color: var(--gold);
 }
 
 .result-stats-card {
@@ -486,10 +473,6 @@ h1 {
   border-color: rgba(255,255,255,0.3);
   transform: translateY(-2px);
 }
-.btn.danger {
-  background: var(--danger);
-  box-shadow: 0 4px 15px rgba(192,57,43,0.4);
-}
 
 /* Лидерборд */
 #lb-table-wrap {
@@ -523,14 +506,14 @@ h1 {
   border-bottom: 1px solid rgba(255,255,255,0.05);
 }
 #lb-table tbody tr:hover td { background: rgba(255,255,255,0.06); }
-#lb-table tbody tr.rank-1 td:first-child { color: var(--gold);   font-size: 1.6rem; text-shadow: 0 0 10px rgba(250,204,21,0.5); }
+#lb-table tbody tr.rank-1 td:first-child { color: var(--gold); font-size: 1.6rem; text-shadow: 0 0 10px rgba(250,204,21,0.5); }
 #lb-table tbody tr.rank-2 td:first-child { color: var(--silver); font-size: 1.4rem; }
 #lb-table tbody tr.rank-3 td:first-child { color: var(--bronze); font-size: 1.4rem; }
 
 .lb-score { font-weight: 800; font-size: 1.25rem; color: var(--gold); }
 .lb-empty { color: rgba(255,255,255,0.6); font-size: 1.2rem; padding: 46px 0; text-align: center; }
 
-/* Модалка */
+/* Модалка скроллируемая */
 .modal-overlay {
   position: fixed;
   inset: 0;
@@ -540,32 +523,36 @@ h1 {
   align-items: center;
   justify-content: center;
   z-index: 999;
-  padding: 24px;
+  padding: 20px;
 }
 .modal {
-  background: rgba(22, 33, 62, 0.96);
+  background: rgba(22, 33, 62, 0.98);
   border: 1px solid rgba(255,255,255,0.15);
   border-radius: var(--radius);
-  padding: 38px;
+  padding: 34px 38px;
   width: 100%;
   max-width: 580px;
+  max-height: 90vh;
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 18px;
   box-shadow: 0 15px 60px rgba(0,0,0,0.85);
+  scrollbar-width: thin;
+  scrollbar-color: var(--accent) rgba(0,0,0,0.3);
 }
 .modal h2 { font-size: 1.7rem; text-align: center; }
 .help-section {
   text-align: left;
   background: rgba(0,0,0,0.22);
-  padding: 16px;
+  padding: 14px 18px;
   border-radius: 12px;
   border: 1px solid rgba(255,255,255,0.06);
 }
 .help-section h3 {
   font-size: 1.15rem;
   color: var(--accent);
-  margin-bottom: 8px;
+  margin-bottom: 6px;
 }
 .help-section p, .help-section li {
   font-size: 1rem;
